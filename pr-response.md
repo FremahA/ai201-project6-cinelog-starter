@@ -39,6 +39,12 @@ I used Claude throughout this project, primarily for code review, debugging, and
 **How I resolved it:** Re-added the `WatchlistEntry` class to `models.py`, in the same position (after `CollectionEntry`), with `film_id` typed as `db.Column(db.String(36), db.ForeignKey("film.id"), nullable=False)` instead of the original `db.Integer`, matching how `CollectionEntry.film_id` was already updated by the refactor. Also corrected a stale docstring in `add_to_watchlist()` that still described `film_id` as an integer.
 **How I verified no conflict remains:** Ran `pytest tests/ -v` — all tests pass, confirming the `WatchlistEntry` import resolves correctly and the UUID-typed foreign key works end to end.
 
+## Commit History
+
+`git log --oneline` on `feature/watchlist`, showing conventional commits and no merge commits:
+
+![git log --oneline](git-log-screenshot.png)
+
 ## PR Description
 ### What this feature does
 Adds a watchlist to CineLog so users can save films they want to watch later, separate from their collection of films they've already watched and rated. It introduces a `WatchlistEntry` model, `add_to_watchlist(user_id, film_id)` and `get_watchlist(user_id)` service functions, and two endpoints: `GET /watchlist/<user_id>` to view a user's watchlist, and `POST /watchlist/<user_id>/add` to add a film to it. Adding a film that's already on the watchlist returns a `409` instead of creating a duplicate, and adding a film that doesn't exist returns a `404`.
